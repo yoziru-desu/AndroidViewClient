@@ -61,9 +61,9 @@ if sound:
             # If for some reason the dialog is still there we will have Vespa and OK
             ok = vc.findViewById('id/button1')
             if vespa and not ok:
-                print "OK"
+                print("OK")
             else:
-                print "FAIL to set ringtone Vespa"
+                print("FAIL to set ringtone Vespa")
                 sys.exit(1)
         else:
             print >> sys.stderr, "'OK' not found"

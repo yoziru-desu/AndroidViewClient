@@ -31,5 +31,4 @@ from com.dtmilano.android.viewclient import ViewClient, View
 vc = ViewClient(*ViewClient.connectToDeviceOrExit())
 
 button = vc.findViewWithTextOrRaise('Show Dialog')
-print "button: ", button.getClass(), button.getId(), button.getCoords()
-
+print("button: ", button.getClass(), button.getId(), button.getCoords())

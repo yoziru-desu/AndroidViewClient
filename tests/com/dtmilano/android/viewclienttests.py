@@ -18,7 +18,7 @@ import platform
 # PyDev sets PYTHONPATH, use it
 try:
     for p in os.environ['PYTHONPATH'].split(':'):
-        if not p in sys.path:
+        if p not in sys.path:
             sys.path.append(p)
 except:
     pass
@@ -416,8 +416,8 @@ class ViewClientTest(unittest.TestCase):
     def testRoot(self):
         vc = self.__mockTree()
         root = vc.root
-        self.assertTrue(root != None)
-        self.assertTrue(root.parent == None)
+        self.assertTrue(root is not None)
+        self.assertTrue(root.parent is None)
         self.assertTrue(root.getClass() == 'com.android.internal.policy.impl.PhoneWindow$DecorView')
 
     def testParseTree(self):
@@ -447,7 +447,7 @@ class ViewClientTest(unittest.TestCase):
         for k, v in viewsbyId.items():
             self.assertTrue(isinstance(k, str) or isinstance(k, unicode))
             self.assertTrue(isinstance(v, View), "v=" + unicode(v) + " is not a View")
-            self.assertTrue(re.match("id/.*", v.getUniqueId()) != None)
+            self.assertTrue(re.match("id/.*", v.getUniqueId()) is not None)
             self.assertEquals(k, v.getUniqueId())
 
     def testGetViewsById(self):

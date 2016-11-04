@@ -79,7 +79,7 @@ class ViewClientTest(unittest.TestCase):
     def testViewClient_oneDevice_TwoViewClients(self):
         localPort1 = 9005
         remotePort1 = 9006
-        print "Conencting to", remotePort1
+        print("Connecting to", remotePort1)
         vc1 = ViewClient(device=ViewClientTest.device1, serialno=ViewClientTest.serialno1,
                          localport=localPort1, remoteport=remotePort1, autodump=True)
         self.assertTrue(vc1.getRoot() != None)
@@ -87,7 +87,7 @@ class ViewClientTest(unittest.TestCase):
 
         localPort2 = 9007
         remotePort2 = 9008
-        print "Conencting to", remotePort2
+        print("Connecting to", remotePort2)
         vc2 = ViewClient(device=ViewClientTest.device2, serialno=ViewClientTest.serialno2,
                          localport=localPort2, remoteport=remotePort2, autodump=True)
         self.assertTrue(vc2.getRoot() != None)

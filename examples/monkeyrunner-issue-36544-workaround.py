@@ -58,9 +58,9 @@ if USE_AVC:
         hello = vc.findViewById('id/hello')
         if hello:
             if hello.getText() == "Hello Donald":
-                print "OK"
+                print("OK")
             else:
-                print "FAIL"
+                print("FAIL")
         else:
             print >> sys.stderr, "'hello' not found"
     else:
@@ -75,7 +75,7 @@ else:
         easyDevice.touch(showDialogButton, MonkeyDevice.DOWN_AND_UP)
         ViewClient.sleep(3)
         editText = By.id('id/0x123456')
-        print editText
+        print(editText)
         easyDevice.type(editText, 'Donald')
         ViewClient.sleep(3)
         ok = By.id('id/button1')
@@ -85,9 +85,8 @@ else:
         hello = By.id('id/hello')
         if hello:
             if easyDevice.getText(hello) == "Hello Donald":
-                print "OK"
+                print("OK")
             else:
-                print "FAIL"
+                print("FAIL")
         else:
             print >> sys.stderr, "'hello' not found"
-

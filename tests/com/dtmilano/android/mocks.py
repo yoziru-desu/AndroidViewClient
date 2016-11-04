@@ -783,7 +783,7 @@ class MockViewServer():
                 self.request.sendall(DUMP_STATUSBAR)
             else:
                 raise Exception("MockViewServerHandler: unknown command '%s'" % self.data)
-            #print "{} wrote:".format(self.client_address[0])
+            #print("{} wrote:".format(self.client_address[0])
 
     class ServerThread(threading.Thread):
         def __init__(self, server):
@@ -834,7 +834,7 @@ class MockViewServer():
             #self.server.shutdown()
             if DEBUG:
                 print >> sys.stderr, "    shutdown: DONE"
-        except Exception, ex:
+        except Exception as ex:
             print >> sys.stderr, "ERROR", ex
             pass
         self.serverThread.running = False

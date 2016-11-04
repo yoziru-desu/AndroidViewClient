@@ -23,6 +23,6 @@ kwargs2 = {'autodump': False, 'forceviewserveruse': True}
 vc = ViewClient(*ViewClient.connectToDeviceOrExit(), **kwargs2)
 windows = vc.list()
 for wId in windows.keys():
-    print ">>> window=", wId, windows[wId]
+    print(">>> window=", wId, windows[wId])
     vc.dump(window=wId)
     vc.traverse(transform=ViewClient.TRAVERSE_CIT, indent="    ")

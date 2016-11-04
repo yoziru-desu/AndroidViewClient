@@ -38,10 +38,10 @@ device.startActivity(component=component)
 time.sleep(3)
 vc = ViewClient(device, serialno)
 if vc.build[VERSION_SDK_PROPERTY] != 15:
-    print 'This script is intended to run on API-15'
+    print('This script is intended to run on API-15')
     sys.exit(1)
 ALL_PICTURES = 'All pictures'
 vc.findViewWithTextOrRaise(re.compile('%s \(\d+\)' % ALL_PICTURES)).touch()
 vc.dump()
 vc.findViewWithTextOrRaise(ALL_PICTURES)
-print "'%s' found" % ALL_PICTURES
+print("'%s' found" % ALL_PICTURES)

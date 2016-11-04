@@ -56,10 +56,10 @@ for id in vc.getViewIds():
         found = True
         attrs =  vc.findViewById(id)
         if attrs['isSelected()'] == 'true':
-            print "Wi-Fi is",
+            print("Wi-Fi is",)
             if attrs['isChecked()'] != 'true':
-                print "not",
-            print "set"
+                print("not",)
+            print("set")
 
 if not found:
-    print "No Views found that match " + regex
+    print("No Views found that match " + regex)

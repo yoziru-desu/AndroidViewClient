@@ -43,6 +43,6 @@ if vc.getSdkVersion() >= 16:
 else:
     url = vc.findViewByIdOrRaise("id/url").getText()
 if string.find(uri, url) != -1:
-    print "%s successfully loaded" % uri
+    print("%s successfully loaded" % uri)
 else:
-    print "%s was not loaded, url=%s" % (uri, url)
+    print("%s was not loaded, url=%s" % (uri, url))

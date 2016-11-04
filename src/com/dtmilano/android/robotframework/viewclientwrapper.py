@@ -42,6 +42,7 @@ __ http://docutils.sourceforge.net
 DEBUG = False
 ROBOT_LIBRARY_DOC_FORMAT = 'reST'
 
+
 class ViewClientWrapper:
     def __init__(self, serialno):
         device, serialno = ViewClient.connectToDeviceOrExit(serialno=serialno)
@@ -102,4 +103,3 @@ class ViewClientWrapper:
 
     def is_keyboard_show(self):
         return self.device.isKeyboardShown()
-

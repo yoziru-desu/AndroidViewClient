@@ -124,7 +124,7 @@ On OSX install
         self.baseUrl = 'http://%s:%d' % (hostname, localport)
         try:
             self.session = self.__connectSession()
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             self.thread.forceStop()
             raise ex
 
@@ -148,7 +148,7 @@ On OSX install
                 response = session.head(self.baseUrl)
                 if response.status_code == 200:
                     break
-            except requests.exceptions.ConnectionError, ex:
+            except requests.exceptions.ConnectionError as ex:
                 tries -= 1
         lock.release()
         if tries == 0:

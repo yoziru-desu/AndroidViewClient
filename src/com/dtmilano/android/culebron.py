@@ -213,7 +213,7 @@ This is usually installed by python package. Check your distribution details.
     def __init__(self, vc, device, serialno, printOperation, scale=1, concertina=False):
         '''
         Culebron constructor.
-        
+
         @param vc: The ViewClient used by this Culebron instance. Can be C{None} if no back-end is used.
         @type vc: ViewClient
         @param device: The device
@@ -1282,7 +1282,7 @@ This is usually installed by python package. Check your distribution details.
         c = 0
         for (x1, y1, x2, y2) in self.targets:
             if DEBUG:
-                print "adding rectangle:", x1, y1, x2, y2
+                print("adding rectangle:", x1, y1, x2, y2)
             self.markTarget(x1, y1, x2, y2, colors[c % len(colors)])
             c += 1
         self.areTargetsMarked = True
@@ -1678,7 +1678,7 @@ if TKINTER_AVAILABLE:
         def insert(self, parent, index, iid=None, **kw):
             """Creates a new item and return the item identifier of the newly
             created item.
-    
+
             parent is the item ID of the parent item, or the empty string
             to create a new top-level item. index is an integer, or the value
             end, specifying where in the list of parent's children to insert
@@ -1891,7 +1891,7 @@ if TKINTER_AVAILABLE:
         def onGrab(self, entry):
             '''
             Generic grab method.
-            
+
             @param entry: the entry being grabbed
             @type entry: Tkinter.Entry
             '''
@@ -1906,7 +1906,7 @@ if TKINTER_AVAILABLE:
             If the starting point is being grabbed it draws the touching point via
             C{Culebron.drawTouchedPoint()} and if the end point is being grabbed it draws
             using C{Culebron.drawDragLine()}.
-            
+
             @param point: the point touched
             @type point: tuple
             '''
@@ -2089,14 +2089,14 @@ if TKINTER_AVAILABLE:
             self.text.insert(Tkinter.INSERT, '''
     Special keys
     ------------
-    
+
     F1: Help
     F5: Refresh
-    
+
     Mouse Buttons
     -------------
     <1>: Touch the underlying View
-    
+
     Commands
     --------
     Ctrl-A: Generates startActivity() call on output script

@@ -37,4 +37,4 @@ import com.dtmilano
 import com.dtmilano.android
 import com.dtmilano.android.viewclient
 from com.dtmilano.android.viewclient import ViewClient, View
-print "OK"
+print("OK")

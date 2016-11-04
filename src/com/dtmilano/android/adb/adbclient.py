@@ -34,7 +34,7 @@ if sys.executable:
 import string
 import datetime
 import struct
-import cStringIO as StringIO
+from io import BytesIO
 import socket
 import time
 import re
@@ -98,9 +98,9 @@ class Device:
         return Device(*values)
 
     def __init__(self, serialno, status, qualifiers=None):
-        self.serialno = serialno
-        self.status = status
-        self.qualifiers = qualifiers
+        self.serialno = serialno.decode()
+        self.status = status.decode()
+        self.qualifiers = qualifiers.decode()
 
     def __str__(self):
         return "<<<" + self.serialno + ", " + self.status + ", %s>>>" % self.qualifiers
@@ -168,7 +168,7 @@ class AdbClient:
         ''' The map containing the device's physical display properties: width, height and density '''
 
         self.isTransportSet = False
-        if settransport and serialno != None:
+        if settransport and serialno is not None:
             self.__setTransport()
             self.build[VERSION_SDK_PROPERTY] = int(self.__getProp(VERSION_SDK_PROPERTY))
             self.initDisplayProperties()
@@ -213,7 +213,7 @@ class AdbClient:
         s.settimeout(timeout)
         try:
             s.connect((hostname, port))
-        except socket.error, ex:
+        except socket.error as ex:
             raise RuntimeError("ERROR: Connecting to %s:%d: %s.\nIs adb running on your computer?" % (s, port, ex))
         return s
 
@@ -238,7 +238,7 @@ class AdbClient:
         else:
             self.checkConnected()
         b = bytearray(msg, 'utf-8')
-        self.socket.send('%04X%s' % (len(b), b))
+        self.socket.send(b'%04X%s' % (len(b), b))
         if checkok:
             self.__checkOk()
         if reconnect:
@@ -266,19 +266,19 @@ class AdbClient:
             nr += l
         if DEBUG:
             print >> sys.stderr, "    __receive: returning len=", len(recv)
-        return str(recv)
+        return recv
 
     def __checkOk(self):
         if DEBUG:
             print >> sys.stderr, "__checkOk()"
         self.checkConnected()
         self.setAlarm(TIMEOUT)
-        recv = self.socket.recv(4)
+        recv = self.socket.recv(4).decode()
         if DEBUG:
             print >> sys.stderr, "    __checkOk: recv=", repr(recv)
         try:
             if recv != OKAY:
-                error = self.socket.recv(1024)
+                error = self.socket.recv(1024).decode()
                 if error.startswith('0049'):
                     raise RuntimeError(
                         "ERROR: This computer is unauthorized. Please check the confirmation dialog on your device.")
@@ -353,7 +353,7 @@ class AdbClient:
             l = sock.recv_into(view, len(view))
             view = view[l:]
             nb += l
-        return str(_buffer)
+        return _buffer.decode()
 
     def getDevices(self):
         if DEBUG:
@@ -361,7 +361,7 @@ class AdbClient:
         self.__send('host:devices-l', checkok=False)
         try:
             self.__checkOk()
-        except RuntimeError, ex:
+        except RuntimeError as ex:
             print >> sys.stderr, "**ERROR:", ex
             return None
         devices = []
@@ -380,8 +380,8 @@ class AdbClient:
             while True:
                 chunk = None
                 try:
-                    chunk = self.socket.recv(4096)
-                except Exception, ex:
+                    chunk = self.socket.recv(4096).decode()
+                except Exception as ex:
                     print >> sys.stderr, "ERROR:", ex
                 if not chunk:
                     break
@@ -694,10 +694,10 @@ class AdbClient:
             received = self.shell('/system/bin/screencap -p').replace("\r\n", "\n")
             if not received:
                 raise RuntimeError('"/system/bin/screencap -p" result was empty')
-            stream = StringIO.StringIO(received)
+            stream = BytesIO(received)
             try:
                 image = Image.open(stream)
-            except IOError, ex:
+            except IOError as ex:
                 print >> sys.stderr, ex
                 print >> sys.stderr, repr(stream)
                 print >> sys.stderr, repr(received)
@@ -717,7 +717,8 @@ class AdbClient:
             profileEnd()
         return image
 
-    def __transformPointByOrientation(self, (x, y), orientationOrig, orientationDest):
+    def __transformPointByOrientation(self, x_y, orientationOrig, orientationDest):
+        (x, y) = x_y
         if orientationOrig != orientationDest:
             if orientationDest == 1:
                 _x = x
@@ -761,7 +762,7 @@ class AdbClient:
         self.__checkTransport()
         self.drag((x, y), (x, y), duration, orientation)
 
-    def drag(self, (x0, y0), (x1, y1), duration, steps=1, orientation=-1):
+    def drag(self, x_y0, x_y1, duration, steps=1, orientation=-1):
         '''
         Sends drag event n PX (actually it's using C{input swipe} command.
 
@@ -771,6 +772,8 @@ class AdbClient:
         @param steps: number of steps (currently ignored by @{input swipe})
         @param orientation: the orientation (-1: undefined)
         '''
+        (x0, y0) = x_y0
+        (x1, y1) = x_y1
 
         self.__checkTransport()
         if orientation == -1:
@@ -786,7 +789,7 @@ class AdbClient:
         else:
             self.shell('input touchscreen swipe %d %d %d %d %d' % (x0, y0, x1, y1, duration))
 
-    def dragDip(self, (x0, y0), (x1, y1), duration, steps=1, orientation=-1):
+    def dragDip(self, x_y0, x_y1, duration, steps=1, orientation=-1):
         '''
         Sends drag event in DIP (actually it's using C{input swipe} command.
 
@@ -795,6 +798,8 @@ class AdbClient:
         @param duration: duration of the event in ms
         @param steps: number of steps (currently ignored by @{input swipe}
         '''
+        (x0, y0) = x_y0
+        (x1, y1) = x_y1
 
         self.__checkTransport()
         if orientation == -1:
@@ -812,9 +817,9 @@ class AdbClient:
             escaped = text.replace('%s', '\\%s')
             encoded = escaped.replace(' ', '%s')
         else:
-            encoded = str(text);
+            encoded = str(text)
         #FIXME find out which characters can be dangerous,
-        # for exmaple not worst idea to escape " 
+        # for exmaple not worst idea to escape "
         self.shell(u'input text "%s"' % encoded)
 
     def wake(self):
@@ -989,7 +994,8 @@ class AdbClient:
         self.__checkTransport()
         windows = {}
         dww = self.shell('dumpsys window windows')
-        if DEBUG_WINDOWS: print >> sys.stderr, dww
+        if DEBUG_WINDOWS:
+            print >> sys.stderr, dww
         lines = dww.splitlines()
         widRE = re.compile('^ *Window #%s Window{%s (u\d+ )?%s?.*}:' %
                            (_nd('num'), _nh('winId'), _ns('activity', greedy=True)))
@@ -1034,7 +1040,8 @@ class AdbClient:
                     m = viewVisibilityRE.search(lines[l2])
                     if m:
                         visibility = int(m.group('visibility'))
-                        if DEBUG_COORDS: print >> sys.stderr, "getWindows: visibility=", visibility
+                        if DEBUG_COORDS:
+                            print >> sys.stderr, "getWindows: visibility=", visibility
                     if self.build[VERSION_SDK_PROPERTY] >= 17:
                         wvx, wvy = (0, 0)
                         wvw, wvh = (0, 0)
@@ -1166,10 +1173,10 @@ if __name__ == '__main__':
                 line = sout.readline(4096)
                 if prompt.match(line):
                     break
-                print line,
+                print(line)
                 if not line:
                     break
 
-        print "\nBye"
+        print("\nBye")
     else:
-        print 'date:', adbClient.shell('date')
+        print('date:', adbClient.shell('date'))

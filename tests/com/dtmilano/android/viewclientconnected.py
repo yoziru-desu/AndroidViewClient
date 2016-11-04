@@ -12,7 +12,7 @@ import unittest
 # PyDev sets PYTHONPATH, use it
 try:
     for p in os.environ['PYTHONPATH'].split(':'):
-        if not p in sys.path:
+        if p not in sys.path:
             sys.path.append(p)
 except:
     pass
@@ -72,17 +72,17 @@ class ViewClientConnectedTest(unittest.TestCase):
             m[i] = len(vc[i].dump())
             d[i] = len(vc[i].getViewIds())
             if VERBOSE:
-                print "Pass %d: Found %d views and %d after dump with %d view Ids" % \
-                    (i, n[i], m[i], d[i])
+                print("Pass %d: Found %d views and %d after dump with %d view Ids" % \
+                    (i, n[i], m[i], d[i]))
 
         for i in range(1, 10):
             self.assertEquals(n[0], n[i])
             self.assertEquals(n[0], m[i])
             self.assertEquals(n[0], d[i])
-            
+
     def testViewClientBackendsConsistency(self):
         kwargs1 = {'verbose': True, 'ignoresecuredevice': False, 'ignoreversioncheck': False}
-        
+
         kwargs2 = {'forceviewserveruse': False, 'startviewserver': True, 'autodump': False, 'ignoreuiautomatorkilled': True}
         device1, serialno1 = ViewClient.connectToDeviceOrExit(serialno=SERIALNO, **kwargs1)
         vc1 = ViewClient(device1, serialno1, **kwargs2)
@@ -100,7 +100,7 @@ class ViewClientConnectedTest(unittest.TestCase):
 
         # Can't do this, v2 usually has much more views than v1
         #self.assertEqual(len(dump1), len(dump2), "Different number of views (%d != %d)" % (len(dump1), len(dump2)))
-        
+
         found = False
         for v2 in dump2:
             for v1 in dump1:
@@ -108,7 +108,7 @@ class ViewClientConnectedTest(unittest.TestCase):
                 if v2.getUniqueId() == v1.getUniqueId():
                     found = True
                     break
-        self.assertTrue(found) 
+        self.assertTrue(found)
 
         missing = ''
         # The smallest
@@ -123,7 +123,7 @@ class ViewClientConnectedTest(unittest.TestCase):
             if not found:
                 missing += "Couldn't find view with coords=%s in dump1\n" % (str(v2.getCoords()))
         self.assertEqual('', missing, missing)
-        
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

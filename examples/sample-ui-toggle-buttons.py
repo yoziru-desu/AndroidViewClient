@@ -29,7 +29,7 @@ from com.dtmilano.android.viewclient import ViewClient, ViewNotFoundException
 
 vc = ViewClient(*ViewClient.connectToDeviceOrExit())
 if vc.useUiAutomator:
-    print "ViewClient: using UiAutomator backend"
+    print("ViewClient: using UiAutomator backend")
 
 # Find the 3 toggle buttons, because the first 2 change their text if they are selected
 # we use a regex to find them.
@@ -39,4 +39,3 @@ for t in [re.compile('Button 1 .*'), re.compile('Button 2 .*'), 'Button with ID'
         vc.findViewWithTextOrRaise(t).touch()
     except ViewNotFoundException:
         print >>sys.stderr, "Couldn't find button with text=", t
-

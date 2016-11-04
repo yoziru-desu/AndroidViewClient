@@ -42,7 +42,7 @@ import pickle
 import platform
 import xml.parsers.expat
 import unittest
-import StringIO
+from io import StringIO
 from com.dtmilano.android.common import _nd, _nh, _ns, obtainPxPy, obtainVxVy,\
     obtainVwVh, obtainAdbPath
 from com.dtmilano.android.window import Window
@@ -160,7 +160,7 @@ class View:
 
         if DEBUG_VIEW_FACTORY:
             print >> sys.stderr, "View.factory(%s, %s, %s, %s, %s, %s)" % (arg1, arg2, version, forceviewserveruse, windowId, uiAutomatorHelper)
-        if type(arg1) == types.ClassType:
+        if isinstance(arg1, type):
             cls = arg1
             attrs = None
         else:
@@ -173,7 +173,7 @@ class View:
             device = arg2
             view = None
 
-        if attrs and attrs.has_key('class'):
+        if attrs and 'class' in attrs:
             clazz = attrs['class']
             if DEBUG_VIEW_FACTORY:
                 print >> sys.stderr, "    View.factory: creating View with specific class: %s" % clazz
@@ -369,7 +369,7 @@ class View:
         # I should try to see if 'name' is a defined method
         # but it seems that if I call locals() here an infinite loop is entered
 
-        if self.map.has_key(name):
+        if name in self.map:
             r = self.map[name]
         elif self.map.has_key(name + '()'):
             # the method names are stored in the map with their trailing '()'
@@ -381,7 +381,7 @@ class View:
                 r = self.map[mangledName[0]]
             else:
                 # Default behavior
-                raise AttributeError, name
+                raise AttributeError(name)
         elif name.startswith('is'):
             # try removing 'is' prefix
             if DEBUG_GETATTR:
@@ -391,7 +391,7 @@ class View:
                 r = self.map[suffix]
             else:
                 # Default behavior
-                raise AttributeError, name
+                raise AttributeError(name)
         elif name.startswith('get'):
             # try removing 'get' prefix
             if DEBUG_GETATTR:
@@ -401,7 +401,7 @@ class View:
                 r = self.map[suffix]
             else:
                 # Default behavior
-                raise AttributeError, name
+                raise AttributeError(name)
         elif name == 'getResourceId':
             if DEBUG_GETATTR:
                 print >> sys.stderr, "    __getattr__: getResourceId"
@@ -409,10 +409,10 @@ class View:
                 r = self.map['resource-id']
             else:
                 # Default behavior
-                raise AttributeError, name
+                raise AttributeError(name)
         else:
             # Default behavior
-            raise AttributeError, name
+            raise AttributeError(name)
 
 
         # if the method name starts with 'is' let's assume its return value is boolean
@@ -992,7 +992,8 @@ class View:
     def intersection(self, l1, l2):
         return list(set(l1) & set(l2))
 
-    def containsPoint(self, (x, y)):
+    def containsPoint(self, x_y):
+        x, y = x_y
         (X, Y, W, H) = self.getPositionAndSize()
         return (((x >= X) and (x <= (X+W)) and ((y >= Y) and (y <= (Y+H)))))
 
@@ -1083,9 +1084,9 @@ class View:
                 # FIXME: this method should be global
                 self.pilNotInstalledWarning()
                 sys.exit(1)
-            except IOError, ex:
+            except IOError as ex:
                 print >> sys.stderr, ex
-                print repr(stream)
+                print(repr(stream))
                 sys.exit(1)
         else:
             image = self.device.takeSnapshot(reconnect=self.device.reconnect)
@@ -2031,7 +2032,7 @@ class UiDevice():
             "zu-rZA": u"IsiZulu (iNingizimu Afrika)", # Zulu (South Africa)
         }
 
-        if not languageTo in LANGUAGES.keys():
+        if languageTo not in LANGUAGES.keys():
             raise RuntimeError("%s is not a supported language by AndroidViewClient" % languageTo)
         self.openQuickSettingsSettings()
         view = None
@@ -2180,7 +2181,7 @@ class UiScrollable(UiCollection):
                     try:
                         print >> sys.stderr, "    scrollTextIntoView: v=", v.getId(),
                         print >> sys.stderr, v.getText()
-                    except Exception, e:
+                    except Exception as e:
                         print >> sys.stderr, e
                         pass
             #v = self.vc.findViewWithText(text, root=self.view)
@@ -2284,7 +2285,7 @@ class UiAutomator2AndroidViewClient():
         try:
             encoded = uiautomatorxml.encode(encoding='utf-8', errors='replace')
             _ = parser.Parse(encoded, True)
-        except xml.parsers.expat.ExpatError, ex:  # @UndefinedVariable
+        except xml.parsers.expat.ExpatError as ex:  # @UndefinedVariable
             print >>sys.stderr, "ERROR: Offending XML:\n", repr(uiautomatorxml)
             raise RuntimeError(ex)
         return self.root
@@ -2678,7 +2679,7 @@ class ViewClient:
             while len(args) > 1 and args[1][0] == '-':
                 args.pop(1)
             serialno = args[1] if len(args) > 1 else \
-                    os.environ['ANDROID_SERIAL'] if os.environ.has_key('ANDROID_SERIAL') \
+                    os.environ['ANDROID_SERIAL'] if 'ANDROID_SERIAL' in os.environ \
                     else '.*'
         if IP_RE.match(serialno):
             # If matches an IP address format and port was not specified add the default
@@ -2700,7 +2701,7 @@ class ViewClient:
             version = int(versionProperty)
         else:
             if verbose:
-                print "Couldn't obtain device SDK version"
+                print("Couldn't obtain device SDK version")
             version = -1
 
         # we are going to use UiAutomator for versions >= 16 that's why we ignore if the device
@@ -2754,7 +2755,7 @@ class ViewClient:
             if eis:
                 _str += eis
             return _str
-        except Exception, e:
+        except Exception as e:
             import traceback
             return u'Exception in view=%s: %s:%s\n%s' % (view.__smallStr__(), sys.exc_info()[0].__name__, e, traceback.format_exc())
 
@@ -3273,7 +3274,7 @@ class ViewClient:
                 if killedRE.search(received):
                     received = re.sub(killedRE, '</hierarchy>', received)
                 elif DEBUG_RECEIVED:
-                    print "UiAutomator Killed: NOT FOUND!"
+                    print("UiAutomator Killed: NOT FOUND!")
                 # It seems that API18 uiautomator spits this message to stdout
                 dumpedToDevTtyRE = re.compile('</hierarchy>[\n\S]*UI hierchary dumped to: /dev/tty.*', re.MULTILINE)
                 if dumpedToDevTtyRE.search(received):
@@ -3330,7 +3331,7 @@ You should force ViewServer back-end.''')
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
                 s.connect((VIEW_SERVER_HOST, self.localPort))
-            except socket.error, ex:
+            except socket.error as ex:
                 raise RuntimeError("ERROR: Connecting to %s:%d: %s" % (VIEW_SERVER_HOST, self.localPort, ex))
             cmd = 'dump %x\r\n' % window
             if DEBUG:
@@ -3389,7 +3390,7 @@ You should force ViewServer back-end.''')
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
                 s.connect((VIEW_SERVER_HOST, self.localPort))
-            except socket.error, ex:
+            except socket.error as ex:
                 raise RuntimeError("ERROR: Connecting to %s:%d: %s" % (VIEW_SERVER_HOST, self.localPort, ex))
             s.send('list\r\n')
             received = ""
@@ -3732,10 +3733,11 @@ You should force ViewServer back-end.''')
 
         return self.__findViewWithAttributeInTreeOrRaise('content-desc', contentdescription, root)
 
-    def findViewsContainingPoint(self, (x, y), _filter=None):
+    def findViewsContainingPoint(self, x_y, _filter=None):
         '''
         Finds the list of Views that contain the point (x, y).
         '''
+        x, y = x_y
 
         if not _filter:
             _filter = lambda v: True
@@ -3910,9 +3912,9 @@ You should force ViewServer back-end.''')
             except ImportError as ex:
                 self.pilNotInstalledWarning()
                 sys.exit(1)
-            except IOError, ex:
+            except IOError as ex:
                 print >> sys.stderr, ex
-                print repr(stream)
+                print(repr(stream))
                 sys.exit(1)
         else:
             image = self.device.takeSnapshot(reconnect=self.device.reconnect)
@@ -4209,7 +4211,7 @@ On OSX install
             tmp = s
             s = t
             t = tmp
-            n = m;
+            n = m
             m = len(t)
 
         p = [None]*(n+1)
@@ -4252,7 +4254,7 @@ On OSX install
     def excerpt(_str, execute=False):
         code = Excerpt2Code().Parse(_str)
         if execute:
-            exec code
+            exec(code)
         else:
             return code
 
@@ -4579,4 +4581,4 @@ if __name__ == "__main__":
     try:
         vc = ViewClient(None)
     except:
-        print "%s: Don't expect this to do anything" % __file__
+        print("%s: Don't expect this to do anything" % __file__)

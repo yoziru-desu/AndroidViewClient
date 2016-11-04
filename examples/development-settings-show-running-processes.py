@@ -34,15 +34,15 @@ showLoad = vc.findViewWithTextOrRaise("Show running processes")
 alwaysFinish = vc.findViewWithTextOrRaise("Immediately destroy activities")
 
 if not showLoad.isChecked():
-    print "touching @", showLoad.getCenter()
+    print("touching @", showLoad.getCenter())
     showLoad.touch()
 
 if not alwaysFinish.isChecked():
-    print "touching @", alwaysFinish.getCenter()
+    print("touching @", alwaysFinish.getCenter())
     alwaysFinish.touch()
 
 if not showCpu.isChecked():
     # WARNING: Show CPU usage is de-activated as soon as it's activated, that's why it seems it
     # is never set
-    print "touching @", showCpu.getCenter()
+    print("touching @", showCpu.getCenter())
     showCpu.touch()

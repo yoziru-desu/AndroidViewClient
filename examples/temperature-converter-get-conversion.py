@@ -78,7 +78,7 @@ if ft:
 else:
    print >> sys.stderr, "Fahrenheit is empty"
    sys.exit(1)
-print "by id: %.2f C => %.2f F" % (c, f)
+print("by id: %.2f C => %.2f F" % (c, f)
 
 # obtain the views by tag
 #celsius = vc.findViewByTagOrRaise("celsius")
@@ -86,4 +86,4 @@ print "by id: %.2f C => %.2f F" % (c, f)
 #
 #c = float(celsius.getText())
 #f = float(fahrenheit.getText())
-#print "by tag: %.2f C => %.2f F" % (c, f)
+#print("by tag: %.2f C => %.2f F" % (c, f)

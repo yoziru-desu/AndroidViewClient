@@ -39,8 +39,8 @@ vc = ViewClient(device, serialno)
 text = 'Display'
 view = vc.findViewWithText(text)
 if view:
-	print view.__smallStr__()
-	print view.getCoords()
-	print view.getX(), ',', view.getY()
+    print view.__smallStr__()
+    print view.getCoords()
+    print view.getX(), ',', view.getY()
 else:
-	print "View with text='%s' was not found" % text
+    print("View with text='%s' was not found" % text)

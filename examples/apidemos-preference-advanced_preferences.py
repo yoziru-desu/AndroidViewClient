@@ -44,4 +44,4 @@ for i in range(10):
     myPreference.touch()
 vc.dump()
 value1 = vc.findViewByIdOrRaise(_id).getText()
-print "My preference started with value %s and is now %s" % (value0, value1)
+print("My preference started with value %s and is now %s" % (value0, value1))
